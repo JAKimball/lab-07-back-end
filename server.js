@@ -31,9 +31,6 @@ function getLocation(request, response) {
   superagent.get(url)
     .then(saResult => {
       const body = saResult.body;
-
-      console.log(JSON.stringify(body, 0, 2));
-
       const location = new Location(queryStr, body);
       response.status(200).send(location);
     })
