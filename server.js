@@ -32,7 +32,7 @@ function getLocation(request, response) {
     .then(saResult => {
       const body = saResult.body;
       const location = new Location(queryStr, body);
-      response.send(location);
+      response.status(200).send(location);
     })
     .catch(err => {
       const error = new Error(err);
