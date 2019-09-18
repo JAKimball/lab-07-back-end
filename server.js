@@ -1,24 +1,29 @@
 'use strict';
 
+/**
+ * Dependencies
+ */
+
 const express = require('express');
 const cors = require('cors');
 const app = express();
+
 app.use(cors());
 require('dotenv').config();
-
-function Error(err) {
-  this.status = 500;
-  this.responseText = 'Sorry, something went wrong.';
-  this.error = err;
-}
 
 /**
  * Routes
  */
 
-// Location
+app.get('/location', getLocation);
+app.get('/weather', getWeather);
+app.use('*', wildcardRouter);
 
-app.get('/location', (request, response) => {
+/**
+ * Routers
+ */
+
+function getLocation(request, response) {
   try {
     let searchQuery = request.query.data;
     const geoDataResults = require('./data/geo.json');
@@ -32,20 +37,9 @@ app.get('/location', (request, response) => {
     console.error(err);
     response.status(error.status).send(error.responseText);
   }
-});
-
-function Location(searchQuery, geoDataResults) {
-  const results = geoDataResults.results[0];
-
-  this.search_query = searchQuery;
-  this.formatted_query = results.formatted_address;
-  this.latitude = results.geometry.location.lat;
-  this.longitude = results.geometry.location.lng;
 }
 
-// Weather
-
-app.get('/weather', (request, response) => {
+function getWeather(request, response) {
   try {
     let searchQuery = request.query.data;
     const weatherDataResults = require('./data/darksky.json');
@@ -58,7 +52,24 @@ app.get('/weather', (request, response) => {
     console.error(err);
     response.status(error.status).send(error.responseText);
   }
-});
+}
+
+function wildcardRouter(request, response) {
+  response.status(500).send('Sorry, something went wrong');
+}
+
+/**
+ * Constructors
+ */
+
+function Location(searchQuery, geoDataResults) {
+  const results = geoDataResults.results[0];
+
+  this.search_query = searchQuery;
+  this.formatted_query = results.formatted_address;
+  this.latitude = results.geometry.location.lat;
+  this.longitude = results.geometry.location.lng;
+}
 
 function Forecast(searchQuery, weatherDataResults) {
   const result = [];
@@ -76,12 +87,18 @@ function Forecast(searchQuery, weatherDataResults) {
   this.days = result;
 }
 
-app.use('*', (request, response) => {
-  response.status(500).send('Sorry, something went wrong');
-});
+function Error(err) {
+  this.status = 500;
+  this.responseText = 'Sorry, something went wrong.';
+  this.error = err;
+}
+
+/**
+ * PORT
+ */
 
 const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
   console.log(`listening to ${PORT}`);
 });
-
