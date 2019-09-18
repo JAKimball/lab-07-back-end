@@ -25,14 +25,12 @@ app.use('*', wildcardRouter);
  */
 
 function getLocation(request, response) {
-
   let queryStr = request.query.data;
   let url = `https://maps.googleapis.com/maps/api/geocode/json?address=${queryStr}&key=${process.env.GOOGLE_API_KEY}`;
 
   superagent.get(url)
     .then(saResult => {
       const body = saResult.body;
-      console.log(body);
       const location = new Location(queryStr, body);
       response.send(location);
     })
@@ -41,21 +39,6 @@ function getLocation(request, response) {
       console.error(err);
       response.status(error.status).send(error.responseText);
     });
-
-  try {
-    let searchQuery = request.query.data;
-    // const geoDataResults = require('./data/geo.json');
-
-
-    const locations = new Location(searchQuery, geoDataResults);
-
-    response.status(200).send(locations);
-  }
-  catch (err) {
-    const error = new Error(err);
-    console.error(err);
-    response.status(error.status).send(error.responseText);
-  }
 }
 
 function getWeather(request, response) {
