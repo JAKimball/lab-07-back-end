@@ -25,6 +25,7 @@ In this app, we used JavaScript, Express, cors, and dotenv. Express is the libra
 <!-- Give credit (and a link) to other people or resources that helped you build this application. -->
 -->
 
+## Time estimates 9/17/19
 
 Number and name of feature: #1 Repository Set Up
 
@@ -71,3 +72,33 @@ Start time: 1:25 PM
 Finish time: 
 
 Actual time needed to complete: 
+
+## Time estimates 9/18/19
+
+Number and name of feature: #01 Data formatting
+
+Estimate of time needed to complete: 1:00 hours
+
+Start time: Wed 9/18/19 10:00am
+
+Wed 9/18/19
+  - 10:00am - 10:30am
+
+Finish time: Wed 9/18/19 10:30am
+
+Actual time needed to complete: 0:30 hours
+
+---
+
+Number and name of feature: #02 Locations
+
+Estimate of time needed to complete: 1:00 hours
+
+Start time: Wed 9/18/19 10:30am
+
+Wed 9/18/19
+  - 10:30am - 11:30am
+
+Finish time: Wed 9/18/19 11:30am
+
+Actual time needed to complete: 1:00 hours
