@@ -42,18 +42,36 @@ function getLocation(request, response) {
 }
 
 function getWeather(request, response) {
-  try {
-    let searchQuery = request.query.data;
-    const weatherDataResults = require('./data/darksky.json');
+  const searchQuery = request.query.data;
+  const latitude = searchQuery.latitude;
+  const longitude = searchQuery.longitude;
+  const url = `https://api.darksky.net/forecast/${process.env.WEATHER_API_KEY}/${latitude},${longitude}`
 
-    const forecast = new Forecast(searchQuery, weatherDataResults);
+  superagent.get(url)
+    .then(data => {
+      const body = data.body;
+      const forecast = new Forecast(searchQuery, body);
 
-    response.status(200).send(forecast.days);
-  } catch (err) {
-    const error = new Error(err);
-    console.error(err);
-    response.status(error.status).send(error.responseText);
-  }
+      response.status(200).send(forecast.days);
+    })
+    .catch(err => {
+      const error = new Error(err);
+      console.error(err);
+      response.status(error.status).send(error.responseText);
+    });
+
+  // try {
+  //   let searchQuery = request.query.data;
+  //   const weatherDataResults = require('./data/darksky.json');
+
+  //   const forecast = new Forecast(searchQuery, weatherDataResults);
+
+  //   response.status(200).send(forecast.days);
+  // } catch (err) {
+  //   const error = new Error(err);
+  //   console.error(err);
+  //   response.status(error.status).send(error.responseText);
+  // }
 }
 
 function wildcardRouter(request, response) {

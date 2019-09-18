@@ -102,3 +102,18 @@ Wed 9/18/19
 Finish time: Wed 9/18/19 11:30am
 
 Actual time needed to complete: 1:00 hours
+
+---
+
+Number and name of feature: #03 Weather
+
+Estimate of time needed to complete: 1:00 hours
+
+Start time: Wed 9/18/19 1:00pm
+
+Wed 9/18/19
+  - 1:00pm -
+
+Finish time:
+
+Actual time needed to complete:
