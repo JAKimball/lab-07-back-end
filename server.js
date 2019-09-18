@@ -28,17 +28,19 @@ app.get('/location', (request, response) => {
     response.status(200).send(locations);
   }
   catch (err) {
-    console.error(err);
     const error = new Error(err);
-    response.status(500).send(error);
+    console.error(err);
+    response.status(error.status).send(error.responseText);
   }
 });
 
 function Location(searchQuery, geoDataResults) {
+  const results = geoDataResults.results[0];
+
   this.search_query = searchQuery;
-  this.formatted_query = geoDataResults.results[0].formatted_address;
-  this.latitude = geoDataResults.results[0].geometry.location.lat;
-  this.longitude = geoDataResults.results[0].geometry.location.lng;
+  this.formatted_query = results.formatted_address;
+  this.latitude = results.geometry.location.lat;
+  this.longitude = results.geometry.location.lng;
 }
 
 // Weather
@@ -52,7 +54,9 @@ app.get('/weather', (request, response) => {
 
     response.status(200).send(forecast.days);
   } catch (err) {
+    const error = new Error(err);
     console.error(err);
+    response.status(error.status).send(error.responseText);
   }
 });
 
