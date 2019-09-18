@@ -1,8 +1,8 @@
-# lab-06-back-end
+# lab-07-back-end
 
 # Project Name
 
-**Author**: Karina Chen, Jonathan Kimball
+**Author**: Ethan Davis, Jonathan Kimball
 **Version**: 1.0.0 (increment the patch/fix version number if you make more commits past your first submission)
 
 ## Overview

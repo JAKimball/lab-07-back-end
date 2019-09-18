@@ -7,9 +7,10 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
+const superagent = require('superagent');
+require('dotenv').config();
 
 app.use(cors());
-require('dotenv').config();
 
 /**
  * Routes
@@ -24,19 +25,20 @@ app.use('*', wildcardRouter);
  */
 
 function getLocation(request, response) {
-  try {
-    let searchQuery = request.query.data;
-    const geoDataResults = require('./data/geo.json');
+  let queryStr = request.query.data;
+  let url = `https://maps.googleapis.com/maps/api/geocode/json?address=${queryStr}&key=${process.env.GOOGLE_API_KEY}`;
 
-    const locations = new Location(searchQuery, geoDataResults);
-
-    response.status(200).send(locations);
-  }
-  catch (err) {
-    const error = new Error(err);
-    console.error(err);
-    response.status(error.status).send(error.responseText);
-  }
+  superagent.get(url)
+    .then(saResult => {
+      const body = saResult.body;
+      const location = new Location(queryStr, body);
+      response.send(location);
+    })
+    .catch(err => {
+      const error = new Error(err);
+      console.error(err);
+      response.status(error.status).send(error.responseText);
+    });
 }
 
 function getWeather(request, response) {
