@@ -72,8 +72,7 @@ function Location(searchQuery, geoDataResults) {
 }
 
 function Forecast(searchQuery, weatherDataResults) {
-  const result = [];
-  weatherDataResults.daily.data.forEach(day => {
+  const result = weatherDataResults.daily.data.map(day => {
     const obj = {};
     obj.forecast = day.summary;
 
@@ -81,7 +80,7 @@ function Forecast(searchQuery, weatherDataResults) {
     date.setUTCSeconds(day.time);
     obj.time = date.toDateString();
 
-    result.push(obj);
+    return obj;
   });
 
   this.days = result;
