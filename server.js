@@ -12,6 +12,10 @@ function Error(err) {
   this.error = err;
 }
 
+/**
+ * Routes
+ */
+
 // Location
 
 app.get('/location', (request, response) => {
@@ -37,7 +41,6 @@ function Location(searchQuery, geoDataResults) {
   this.longitude = geoDataResults.results[0].geometry.location.lng;
 }
 
-
 // Weather
 
 app.get('/weather', (request, response) => {
@@ -47,14 +50,13 @@ app.get('/weather', (request, response) => {
 
     const forecast = new Forecast(searchQuery, weatherDataResults);
 
-    response.status(200).send(forecast);
+    response.status(200).send(forecast.days);
   } catch (err) {
     console.error(err);
   }
 });
 
 function Forecast(searchQuery, weatherDataResults) {
-  console.log(weatherDataResults);
   const result = [];
   weatherDataResults.daily.data.forEach(day => {
     const obj = {};
@@ -66,7 +68,8 @@ function Forecast(searchQuery, weatherDataResults) {
 
     result.push(obj);
   });
-  return result;
+
+  this.days = result;
 }
 
 app.use('*', (request, response) => {
