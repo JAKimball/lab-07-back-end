@@ -25,6 +25,11 @@ app.use('*', wildcardRouter);
  * Routers
  */
 
+/**
+ * Router for retrieving location data Google
+ * @param {Object} request - Comes from the cliet
+ * @param {Object} response - Goes back to the cliet
+ */
 function getLocation(request, response) {
   let queryStr = request.query.data;
   let url = `https://maps.googleapis.com/maps/api/geocode/json?address=${queryStr}&key=${process.env.GOOGLE_API_KEY}`;
@@ -42,6 +47,11 @@ function getLocation(request, response) {
     });
 }
 
+/**
+ * Router for retrieving weather data Darksky API
+ * @param {Object} request - Comes from the client
+ * @param {Object} response - Goes back to the client
+ */
 function getWeather(request, response) {
   const searchQuery = request.query.data;
   const latitude = searchQuery.latitude;
@@ -62,6 +72,11 @@ function getWeather(request, response) {
     });
 }
 
+/**
+ * Router to get the Event data from EventBrite API
+ * @param {Object} request
+ * @param {Object} response
+ */
 function getEvents(request, response) {
   const searchQuery = request.query.data;
   const latitude = searchQuery.latitude;
