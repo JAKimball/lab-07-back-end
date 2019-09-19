@@ -18,6 +18,7 @@ app.use(cors());
 
 app.get('/location', getLocation);
 app.get('/weather', getWeather);
+app.get('/events', getEvents);
 app.use('*', wildcardRouter);
 
 /**
@@ -59,19 +60,33 @@ function getWeather(request, response) {
       console.error(err);
       response.status(error.status).send(error.responseText);
     });
+}
 
-  // try {
-  //   let searchQuery = request.query.data;
-  //   const weatherDataResults = require('./data/darksky.json');
+function getEvents(request, response) {
+  const searchQuery = request.query.data;
+  const latitude = searchQuery.latitude;
+  const longitude = searchQuery.longitude;
+  const url = `https://www.eventbriteapi.com/v3/events/search?location.longitude=${longitude}&location.latitude=${latitude}74&expand=venue&token=${process.env.EVENTBRITE_API_KEY}`;
 
-  //   const forecast = new Forecast(searchQuery, weatherDataResults);
+  superagent.get(url)
+    .then(data => {
+      const body = data.body;
+      const events = body.events.map(el => {
+        const link = el.url;
+        const name = el.name.text;
+        const eventDate = el.start.local;
+        const summary = el.summary;
 
-  //   response.status(200).send(forecast.days);
-  // } catch (err) {
-  //   const error = new Error(err);
-  //   console.error(err);
-  //   response.status(error.status).send(error.responseText);
-  // }
+        return new Event(link, name, eventDate, summary);
+      });
+
+      response.status(200).send(events);
+    })
+    .catch(err => {
+      const error = new Error(err);
+      console.error(err);
+      response.status(error.status).send(error.responseText);
+    })
 }
 
 function wildcardRouter(request, response) {
@@ -104,6 +119,13 @@ function Forecast(searchQuery, weatherDataResults) {
   });
 
   this.days = result;
+}
+
+function Event(link, name, eventDate, summary) {
+  this.link = link;
+  this.name = name;
+  this.eventDate = eventDate;
+  this.summary = summary;
 }
 
 function Error(err) {
