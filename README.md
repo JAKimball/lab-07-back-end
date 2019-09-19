@@ -112,8 +112,23 @@ Estimate of time needed to complete: 1:00 hours
 Start time: Wed 9/18/19 1:00pm
 
 Wed 9/18/19
-  - 1:00pm -
+  - 1:00pm - 1:30pm
 
-Finish time:
+Finish time: Wed 9/18/19 1:30pm
 
-Actual time needed to complete:
+Actual time needed to complete: 0:30 hours
+
+---
+
+Number and name of feature: #04 EventBrite
+
+Estimate of time needed to complete: 1:00 hours
+
+Start time: Wed 9/18/19 6:30pm
+
+Wed 9/18/19
+  - 6:30pm - 7:00pm
+
+Finish time: Wed 9/18/19 7:00pm
+
+Actual time needed to complete: 0:30 hours
