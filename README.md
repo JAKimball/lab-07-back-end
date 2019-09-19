@@ -2,7 +2,7 @@
 
 # Project Name
 
-**Author**: Ethan Davis, Jonathan Kimball
+**Authors**: Karina Chen, Ethan Davis, Jonathan Kimball
 **Version**: 1.0.0 (increment the patch/fix version number if you make more commits past your first submission)
 
 ## Overview
@@ -23,7 +23,18 @@ In this app, we used JavaScript, Express, cors, and dotenv. Express is the libra
 
 ## Credits and Collaborations
 <!-- Give credit (and a link) to other people or resources that helped you build this application. -->
--->
+
+### Karina Chen, Jonathan Kimball
+
+- Initial setup for Node.js and Express
+- Code to respond to client requests for location and weather
+
+### Ethan Davis, Jonathan Kimball
+
+- Coding to use APIs
+  - Google Geocode API
+  - Darkskys Weather API
+  - Enventbrite API
 
 ## Time estimates 9/17/19
 
