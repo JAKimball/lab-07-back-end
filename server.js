@@ -10,11 +10,13 @@ const express = require('express');
 const pg = require('pg');
 const superagent = require('superagent');
 
-const client = new pg.Client(process.env.DATA_BASE);
+const client = new pg.Client(process.env.DATABASE_URL);
 client.on('error', err => console.error(err));
 
 const app = express();
 app.use(cors());
+
+const PORT = process.env.PORT || 3000;
 
 /**
  * Routes
@@ -35,20 +37,8 @@ app.use('*', wildcardRouter);
  * @param {Object} response - Goes back to the cliet
  */
 function getLocation(request, response) {
-  let queryStr = request.query.data;
-  let url = `https://maps.googleapis.com/maps/api/geocode/json?address=${queryStr}&key=${process.env.GOOGLE_API_KEY}`;
-
-  superagent.get(url)
-    .then(saResult => {
-      const body = saResult.body;
-      const location = new Location(queryStr, body);
-      response.status(200).send(location);
-    })
-    .catch(err => {
-      const error = new Error(err);
-      console.error(err);
-      response.status(error.status).send(error.responseText);
-    });
+  const queryStr = request.query.data;
+  pgGetLocation(queryStr, response);
 }
 
 /**
@@ -171,10 +161,43 @@ function Error(err) {
 }
 
 /**
- * PORT
+ * Database
  */
 
-const PORT = process.env.PORT || 3000;
+function pgGetLocation(city_name, response) {
+  const pgQueryStr = 'SELECT city_name, city_address, latitude, longitude FROM locations WHERE city_name=$1';
+
+  client.query(pgQueryStr, [city_name])
+    .then(res => {
+      if (res.rows.length > 0) {
+        const location = res.rows[0];
+        response.status(200).send(location);
+      } else {
+        const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${city_name}&key=${process.env.GOOGLE_API_KEY}`;
+
+        superagent.get(url)
+          .then(saResult => {
+            const body = saResult.body;
+            const location = new Location(city_name, body);
+            response.status(200).send(location);
+          })
+          .catch(err => {
+            const error = new Error(err);
+            console.error(err);
+            response.status(error.status).send(error.responseText);
+          });
+      }
+    })
+    .catch(err => {
+      const error = new Error(err);
+      console.error(err);
+      response.status(error.status).send(error.responseText);
+    });
+}
+
+/**
+ * Port
+ */
 
 client.connect()
   .then(() => {
