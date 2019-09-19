@@ -7,7 +7,11 @@
 require('dotenv').config();
 const cors = require('cors');
 const express = require('express');
+const pg = require('pg');
 const superagent = require('superagent');
+
+const client = new pg.Client(process.env.DATA_BASE);
+client.on('error', err => console.error(err));
 
 const app = express();
 app.use(cors());
@@ -172,6 +176,12 @@ function Error(err) {
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log(`listening to ${PORT}`);
-});
+client.connect()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`listening to ${PORT}`);
+    });
+  })
+  .catch(err => {
+    console.error(err);
+  });
