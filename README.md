@@ -143,3 +143,19 @@ Wed 9/18/19
 Finish time: Wed 9/18/19 7:00pm
 
 Actual time needed to complete: 0:30 hours
+
+## Time estimates 9/19/19
+
+Number and name of feature: #02 Database
+
+Estimate of time needed to complete: 0:30 hours
+
+Start time: Thu 9/19/19 11:30am
+
+Thu 9/19/19
+  - 11:30am - 12:00pm
+  - 12:30pm - 1:00pm
+
+Finish time: Thu 9/19/19 1:00pm
+
+Actual time needed to complete: 1:00 hours

@@ -4,13 +4,19 @@
  * Dependencies
  */
 
-const express = require('express');
-const cors = require('cors');
-const app = express();
-const superagent = require('superagent');
 require('dotenv').config();
+const cors = require('cors');
+const express = require('express');
+const pg = require('pg');
+const superagent = require('superagent');
 
+const client = new pg.Client(process.env.DATABASE_URL);
+client.on('error', err => console.error(err));
+
+const app = express();
 app.use(cors());
+
+const PORT = process.env.PORT || 3000;
 
 /**
  * Routes
@@ -25,23 +31,21 @@ app.use('*', wildcardRouter);
  * Routers
  */
 
+/**
+ * Router for retrieving location data Google
+ * @param {Object} request - Comes from the cliet
+ * @param {Object} response - Goes back to the cliet
+ */
 function getLocation(request, response) {
-  let queryStr = request.query.data;
-  let url = `https://maps.googleapis.com/maps/api/geocode/json?address=${queryStr}&key=${process.env.GOOGLE_API_KEY}`;
-
-  superagent.get(url)
-    .then(saResult => {
-      const body = saResult.body;
-      const location = new Location(queryStr, body);
-      response.status(200).send(location);
-    })
-    .catch(err => {
-      const error = new Error(err);
-      console.error(err);
-      response.status(error.status).send(error.responseText);
-    });
+  const queryStr = request.query.data;
+  pgGetLocation(queryStr, response);
 }
 
+/**
+ * Router for retrieving weather data Darksky API
+ * @param {Object} request - Comes from the client
+ * @param {Object} response - Goes back to the client
+ */
 function getWeather(request, response) {
   const searchQuery = request.query.data;
   const latitude = searchQuery.latitude;
@@ -62,6 +66,11 @@ function getWeather(request, response) {
     });
 }
 
+/**
+ * Router to get the Event data from EventBrite API
+ * @param {Object} request
+ * @param {Object} response
+ */
 function getEvents(request, response) {
   const searchQuery = request.query.data;
   const latitude = searchQuery.latitude;
@@ -97,6 +106,11 @@ function wildcardRouter(request, response) {
  * Constructors
  */
 
+/**
+ * Location constructor
+ * @param {String} searchQuery - Query string input from the client
+ * @param {Object} geoDataResults - Geo graphical data from Google
+ */
 function Location(searchQuery, geoDataResults) {
   const results = geoDataResults.results[0];
 
@@ -106,6 +120,11 @@ function Location(searchQuery, geoDataResults) {
   this.longitude = results.geometry.location.lng;
 }
 
+/**
+ * Forecast constructor
+ * @param {String} searchQuery - Query string input from the client
+ * @param {Object} weatherDataResults - Weather data from Darksky API
+ */
 function Forecast(searchQuery, weatherDataResults) {
   const result = weatherDataResults.daily.data.map(day => {
     const obj = {};
@@ -121,6 +140,13 @@ function Forecast(searchQuery, weatherDataResults) {
   this.days = result;
 }
 
+/**
+ * Event constructor
+ * @param {String} link - Link to the Event from EventBrite API
+ * @param {String} name - Name of the days events from EventBrite API
+ * @param {String} eventDate - Event date string
+ * @param {String} summary - Event summary from EventBrite API
+ */
 function Event(link, name, eventDate, summary) {
   this.link = link;
   this.name = name;
@@ -135,11 +161,50 @@ function Error(err) {
 }
 
 /**
- * PORT
+ * Database
  */
 
-const PORT = process.env.PORT || 3000;
+function pgGetLocation(city_name, response) {
+  const pgQueryStr = 'SELECT city_name, city_address, latitude, longitude FROM locations WHERE city_name=$1';
 
-app.listen(PORT, () => {
-  console.log(`listening to ${PORT}`);
-});
+  client.query(pgQueryStr, [city_name])
+    .then(res => {
+      if (res.rows.length > 0) {
+        const location = res.rows[0];
+        response.status(200).send(location);
+      } else {
+        const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${city_name}&key=${process.env.GOOGLE_API_KEY}`;
+
+        superagent.get(url)
+          .then(saResult => {
+            const body = saResult.body;
+            const location = new Location(city_name, body);
+            response.status(200).send(location);
+          })
+          .catch(err => {
+            const error = new Error(err);
+            console.error(err);
+            response.status(error.status).send(error.responseText);
+          });
+      }
+    })
+    .catch(err => {
+      const error = new Error(err);
+      console.error(err);
+      response.status(error.status).send(error.responseText);
+    });
+}
+
+/**
+ * Port
+ */
+
+client.connect()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`listening to ${PORT}`);
+    });
+  })
+  .catch(err => {
+    console.error(err);
+  });
